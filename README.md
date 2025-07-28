@@ -1,1 +1,1 @@
-I don't know just want to create
+Personal AI platform for passive income and skill showcase."
