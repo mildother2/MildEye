@@ -1,0 +1,4 @@
+sqlmodel
+uvicorn
+python-fasthtml
+aiohttp # For asynchronous HTTP requests (useful for web scraping)
