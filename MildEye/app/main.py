@@ -2,11 +2,10 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlmodel import Session, select
 from typing import List
-import asyncio
-from datetime import datetime
+from datetime import datetime # Make sure datetime is imported here
 
-# Import the database engine and models from your database file
-from app.database import engine, create_db_and_tables, get_session, ScrapedContent
+# THIS IS THE CRITICAL CHANGE: Use a relative import
+from .database import engine, create_db_and_tables, get_session, ScrapedContent
 
 # Initialize the FastAPI application
 app = FastAPI(
@@ -27,7 +26,13 @@ async def on_startup():
 async def read_root():
     return {"message": "MildEye Backend is running!"}
 
-# --- API Endpoints for Scraped Content ---
+# --- NEW: Simple API endpoint for fasthtml to test communication ---
+@app.get("/api/hello")
+async def hello_world():
+    """
+    A simple endpoint to test communication from the frontend.
+    """
+    return {"message": "Hello from FastAPI Backend!"}
 
 # Endpoint to create a new scraped content entry
 @app.post("/api/scraped_content/", response_model=ScrapedContent)
@@ -61,7 +66,14 @@ async def get_scraped_content_by_id(content_id: int, session: Session = Depends(
         raise HTTPException(status_code=404, detail="Content not found")
     return content
 
-# You would run this FastAPI app with uvicorn, typically in a separate process from your fasthtml frontend.
-# Example command (from the MildEye/ directory):
-# uvicorn app.main:app --host 0.0.0.0 --port 8001 --reload
-# Note: Using a different port (8001) than the frontend (8000) is important
+# This block allows you to run the app directly
+if __name__ == "__main__":
+    import uvicorn
+    # When running directly with 'python app/main.py' from MildEye/
+    # Python adds MildEye/ to sys.path, so 'app.main:app' will work.
+    uvicorn.run(
+        "app.main:app",
+        host="0.0.0.0",
+        port=8001,
+        reload=True,
+    )
